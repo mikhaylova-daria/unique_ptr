@@ -26,7 +26,8 @@ template <typename T>
 
         unique_ptr(T* &x) {
             if (x != nullptr) {
-                ptr = &x;
+                ptr = new T*(x);
+                x =nullptr;
             }
         }
 
@@ -38,9 +39,11 @@ template <typename T>
         }
 
         ~unique_ptr(){
-            if (*(this->ptr) != nullptr) {
-                delete(*(this->ptr));
-                *(this->ptr) = nullptr;
+            if (this->ptr != nullptr) {
+                if (*(this->ptr) != nullptr) {
+                    delete(*(this->ptr));
+                    delete(this->ptr);
+                }
             }
         }
 
@@ -103,9 +106,14 @@ template <typename T>
 
 int main()
 {
-    char *ptr= new char('A');
-    {my::unique_ptr<char> x(ptr);
-     cout<<(*x)<<endl;}
+    my::unique_ptr<char> z;
+    {
+        char *ptr= new char('A');
+        my::unique_ptr<char> x(ptr);
+        z=x;
+        cout<<*z<<endl;
+    }
+   cout<<(*z)<<endl;
 
 //    {
 //        my::unique_ptr<char> y(ptr);
